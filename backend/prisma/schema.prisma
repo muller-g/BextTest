@@ -1,0 +1,33 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  Pendente
+  Andamento
+  Concluida
+}
+
+model TaskList {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String
+
+  Task Task[]
+}
+
+model Task {
+    id    String @id @default(auto()) @map("_id") @db.ObjectId
+    title String
+    description String
+    status Status @default(Pendente)
+    due_date DateTime
+    task_list String @db.ObjectId
+
+    TaskList TaskList @relation(fields: [task_list], references: [id], onDelete: Cascade)
+}
